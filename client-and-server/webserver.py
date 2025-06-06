@@ -38,6 +38,9 @@ try:
         new_socket.send(response.encode("ISO-8859-1"))
         new_socket.close()
 
+except KeyboardInterrupt:
+    print("Shutting down server...")
+
 finally:
     server_socket.close()
 

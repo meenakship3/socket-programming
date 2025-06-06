@@ -11,25 +11,26 @@ else:
     port = 80
 
 client_socket = socket.socket()
+
 try:
     client_socket.connect((host, port))
+    http_request = f"GET / HTTP/1.1\r\nHost: {host}\r\nConnection: close\r\n\r\n"
+
+    client_socket.sendall(http_request.encode("ISO-8859-1"))
+
+    response = b''
+    while True:
+        data = client_socket.recv(1024)
+        if not data:
+            break
+        response += data
+
+    response_decoded = response.decode("ISO-8859-1")
+    print(response_decoded)
 except socket.error as e:
     print(f"Error connecting: {e}")
     exit()
-
-http_request = f"GET / HTTP/1.1\r\nHost: {host}\r\nConnection: close\r\n\r\n"
-
-client_socket.sendall(http_request.encode("ISO-8859-1"))
-
-response = b''
-while True:
-    data = client_socket.recv(1024)
-    if not data:
-        break
-    response += data
-
-response_decoded = response.decode("ISO-8859-1")
-
-print(response_decoded)
-
-client_socket.close()
+except KeyboardInterrupt:
+    print("\nConnection interrupted. Closing client...")
+finally:
+    client_socket.close()
